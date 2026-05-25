@@ -1,2 +1,11 @@
-this is mister tanisq kanthed
-def
+from pyspark import SparkContext
+sc = SparkContext(appName="WordCountHDFS")
+# Read from HDFS
+rdd = sc.textFile("hdfs://localhost:9000/wordcount.txt")
+# Word count logic
+words = rdd.flatMap(lambda line: line.split())
+pairs = words.map(lambda word: (word, 1))
+wordCounts = pairs.reduceByKey(lambda a, b: a + b)
+# Save result back to HDFS
+wordCounts.saveAsTextFile("hdfs://localhost:9000/wordcount-result1")
+sc.stop()
